@@ -1,0 +1,73 @@
+﻿@model TWeb1.Items
+@{ 
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "LogIn";
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        var err = @Model.ErrorLogIn;
+
+        if (err == "1") {
+        $("#error").text("Неправильний логiн або пароль");
+        }
+        $("#navbarAcc").hide();
+        $("#navbarGuest").hide();
+    });
+    function WithoutLogin() {
+        $("#WithoutAccount").val(true);
+
+        $("#account_Email").val("0");
+        $("#account_Password").val("0");
+        $("#submitBtt").click();
+    }
+    function Register() {
+        $.ajax({
+            type: "GET",
+            url: "/Account/Register"
+        }).done(function (data) {
+            window.location.href = "/Account/Register";
+        });        
+
+    }
+</script>
+
+<!doctype html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title></title>
+</head>
+<body>
+    <form action="/Account/Index" method="post">
+        @Html.HiddenFor(m => m.WithoutAccount)
+        
+        <div class=" container-fluid" style="min-width:300px;">
+            <div class="row mt-1">
+                <div class="col-12 offset-md-3 ">
+                    <span id="error" style="color:red"></span>
+                </div>
+            </div>
+            <div class="row " style="margin-top:10%;">
+
+                @Html.LabelFor(m => m.account.Email, "Логiн:", new { @class = "col-3 col-md-2 offset-md-3 col-form-label" })
+                @Html.TextBoxFor(m => m.account.Email, new { @class = "col-8 col-md-4 form-control form-control-sm", @required = "true" })
+
+                @Html.LabelFor(m => m.account.Password, "Пароль:", new { @class = " col-3 col-md-2 offset-md-3  col-form-label" })
+                @Html.TextBoxFor(m => m.account.Password, new { @class = "col-8 col-md-4 form-control form-control-sm", @type = "password", @required = "true", autocomplete = "off" })
+
+            </div>
+            <div class="row">
+                <button type="submit" id="submitBtt" class="btn-success col-10 " style="max-width:190px;margin-left: calc(50% - 95px);">Увiйти</button>
+            </div>
+            <div class="row">
+                <button type="button" id="submitBtt2" class="btn-success col-10 " onclick="WithoutLogin()" style="max-width:190px;margin-left: calc(50% - 95px);">Увiйти як гiсть</button>
+            </div>
+            <div class="row">
+                <button type="button" id="submitBtt3" class="btn-success col-10 " onclick="Register()" style="max-width:190px;margin-left: calc(50% - 95px);">Зареєструватися</button>
+            </div>
+        </div>
+    </form>
+    </body>
+</html>

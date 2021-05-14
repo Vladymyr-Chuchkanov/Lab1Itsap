@@ -1,0 +1,104 @@
+﻿@model TWeb1.ObstaclesList
+<script src="https://code.jquery.com/jquery-migrate-3.0.0.js"></script>
+<script>
+
+    $(document).ready(function () {
+
+        $("#navbarGuest").hide();
+        //$("#navbarAcc").hide();
+    })
+    function ShowObstacle(id) {
+
+        var link = '@Url.Action("ShowObstacle","Main",new {id = -101 })';
+        link = link.replace("-101", id);
+
+        $("#dialog").load(link);
+        $("#dialog").dialog({
+            buttons: [{ text: "Close", click: dialogClose, "class": "btn btn-danger" }],
+            autoOpen: false,
+            modal: true,
+            width: '100%',
+            height: '100%',
+            position: { my: "left top", at: "left top", of: window },
+
+            resizable: true
+
+        });
+        $(".ui-dialog-titlebar-close").hide();
+        $('#dialog').dialog("open");
+        $(".ui-dialog-titlebar-close").hide();
+    }
+    function dialogClose() {
+
+        $('#dialog').dialog("close");
+    }
+</script>
+
+<form method="post" action="/Main/AddObstacle">
+    @Html.HiddenFor(m=>m.str)
+    @Html.HiddenFor(m=>m.id)
+    <div class="container-fluid">
+        <div id="dialog"></div>
+        <div class="row">
+            <div class="col-6">
+                <a href="@Url.Action("CreateObstacle","Main",new {idC = Model.id,str=Model.str})">Створити Етап</a>
+            </div>
+            <div class="col-6">
+                <a href="@Url.Action("CompetitionAdmin","Main",new {id = Model.id,str=Model.str})">Повернутися до змагання</a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-8">
+                @Html.TextBoxFor(m => m.Search, new { @class = "form-control form-control-sm" })
+            </div>
+            <div class="col-4">
+                <button class="btn btn-success btn-sm" type="submit">Пошук</button>
+            </div>
+        </div>
+        <div class="row">
+            <table class="table table-borderless table-sm  table-striped table-hover">
+                <tr class="row">
+                    <td class="col-2">Назва</td>
+                    <td class="col-2">Опис</td>
+                    <td class="col-2">Умови подолання</td>
+                    <td class="col-2">Рух першого</td>
+                    <td class="col-1">Довжина</td>
+                    <td class="col-1">ОЧ</td>
+                    <td class="col-1">КЧ</td>
+                    <td class="col-1">###</td>
+                </tr>
+                @foreach (var it in Model.Obstacles)
+                {
+                    <tr class="row">
+                        <td class="col-2" onclick="ShowObstacle('@it.ObstacleId')"> @it.Name</td>
+                        <td class="col-2" onclick="ShowObstacle('@it.ObstacleId')">@it.AdditionalDescription</td>
+                        <td class="col-2" onclick="ShowObstacle('@it.ObstacleId')">@it.ConditionsOvercoming</td>
+                        <td class="col-2" onclick="ShowObstacle('@it.ObstacleId')">@it.MovementFirst</td>
+                        <td class="col-1" onclick="ShowObstacle('@it.ObstacleId')">@it.Length</td>
+                        <td class="col-1" onclick="ShowObstacle('@it.ObstacleId')">@it.OptTime</td>
+                        <td class="col-1" onclick="ShowObstacle('@it.ObstacleId')">@it.CriticalTime</td>
+                        <td class="col-1">
+                            <div class="input-group">
+                                <a href="@Url.Action("AddObs","Main",new {str=Model.str,idC = Model.id,idO=it.ObstacleId,calc = Model.calc++ })">
+                                    <i class="fas fa-plus fa-fw" style="color:green"></i>
+                                </a>
+                                <a href="@Url.Action("EditObstacle","Main",new {str=Model.str,idC = Model.id,idO=it.ObstacleId,back=2 })">
+                                    <i class="fas fa-pencil-alt fa-fw"></i>
+                                </a>
+                                <a href="@Url.Action("DeleteObstacle","Main",new {str=Model.str,idC = Model.id,idO=it.ObstacleId,Search = Model.Search })">
+                                    <i class="fas fa-trash-alt fa-fw"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </table>
+        </div>
+
+
+    </div>
+
+
+
+</form>
+

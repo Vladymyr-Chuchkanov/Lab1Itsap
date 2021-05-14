@@ -1,0 +1,183 @@
+﻿@model TWeb1.Items
+
+@{
+}
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css">
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/css/bootstrap-select.css" />
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js"></script>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap-datepicker@1.9.0/dist/js/bootstrap-datepicker.min.js"></script>
+<link id="bsdp-css" href="https://unpkg.com/bootstrap-datepicker@1.9.0/dist/css/bootstrap-datepicker3.min.css" rel="stylesheet">
+<script>
+
+    $(document).ready(function () {
+        var role = '@Dict.dApp.Role';
+        if (role == "гість") {
+            $("#navbarAcc").hide();
+        } else {
+            $("#navbarGuest").hide();
+        }
+        if (role !="адмін") {
+            $("#AdminF").hide();
+        }
+    })
+</script>
+<script type="text/javascript">
+    
+    function Search() {
+
+
+
+        var typs = $("#SelectTypes").val();
+
+        
+        var comps = $("#SelectCompl").val();
+        //alert(typs);
+        //alert(comps);
+        $("#SearchDateFrom").val(document.getElementById("SearchDateFrom_0").value);
+        $("#SearchDateTo").val(document.getElementById("SearchDateTo_0").value);
+        $("#SearchTypes").val ( typs);
+        $("#SearchComplexities").val( comps);
+        $("#MainForm").submit();
+    }
+
+</script>
+<script>
+
+    $(function () {
+
+        $('.datePick').datepicker({
+            format: "mm/dd/yyyy",
+            todayBtn: "linked",
+            clearBtn: true,
+            orientation: "bottom auto",
+            todayHighlight: true
+        });
+
+
+    });
+</script>
+<body>
+    <form id="MainForm" action="/Main/Main" method="post">
+        <div class="container-fluid" style="min-width: 330px;">
+            
+            @Html.HiddenFor(m => m.SearchTypes)
+            @Html.HiddenFor(m => m.SearchComplexities)
+            
+             <div class="row">
+
+                <div id="AdminF"class="col-4 col-sm-2">
+
+
+                    
+                    <a href="/Main/CompetitionAdmin"><i class="fas fa-plus fa-fw" style="color:green"></i></a>
+                    
+                </div>
+
+                <div class="col-6 col-sm-2">
+                    <div class="row">
+                        <button type="button" onclick="Search()" class="btn btn-success btn-sm col-3"><i class="fas fa-search fa-fw"></i></button>
+                        @Html.TextBoxFor(m => m.SearchNameMain, new { @class = "form-control form-control-sm col-8", @placeholder = "Пошук" })
+                    </div>
+                </div>
+
+                <div class="col-12 col-sm-8">
+                    <div class="row">
+                        @Html.HiddenFor(m => m.SearchDateFrom)
+                        @Html.HiddenFor(m => m.SearchDateTo)
+                        <label class="col-3 col-sm-3 col-lg-2 " style="white-space: nowrap;">Дата вiд:</label>
+                        <input type="text" id="SearchDateFrom_0" class="datePick form-control col-8 col-sm-3  form-control-sm text-center " value="@(Model.SearchDateFrom.ToString().Split(" ")[0])">
+                        <label class="col-3 col-sm-3 col-lg-2 mt-1 " style="white-space: nowrap;"> Дата до:</label>
+                        <input type="text" id="SearchDateTo_0" class="mt-1 datePick form-control col-8 col-sm-3  form-control-sm text-center mt-sm-0" value="@(Model.SearchDateTo.ToString().Split(" ")[0])">
+
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="row">
+                        <div class="col-6">
+                            <label>Тип</label>
+                            <select class="selectpicker" id="SelectTypes" multiple data-live-search="true" style="width:100%">
+                                @foreach (var typ in Dict.ListType)
+                                {
+                                    <option value="@typ.ID">@typ.Name</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <label>Клас</label>
+                            <select class="selectpicker" id="SelectCompl" multiple data-live-search="true" style="width:100%">
+                                @foreach (var com in Dict.ListComplexity)
+                                {
+                                    <option value="@com.ID">@com.Name</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="row">
+                <table class="table table-borderless table-sm  table-striped table-hover" style="min-width:720px;">
+
+                    <tr class="row" style="background-color: green;color: WHITE;font-weight: bold;">
+                        <td class="col-2">Назва</td>
+                        <td class="col-1">Місце</td>
+                        <td class="col-1">Старт. внесок</td>
+                        <td class="col-2">Час початку</td>
+                        <td class="col-1">Клас</td>
+                        <td class="col-2">Тип</td>
+                        <td class="col-2">Опис</td>
+                    </tr>
+
+
+
+                    @foreach (var item in Model.competition)
+                    {
+                        <tr class="row">
+                            <td class="col-2"><a href=@Url.Action("Competition", "Main", new {id=item.CompetitionId })>@item.Name</a></td>
+                            <td class="col-1">@item.Place</td>
+                            <td class="col-1">@item.StartTax</td>
+                            <td class="col-2">@item.StartTime</td>
+                            <td class="col-1">@Dict.ListComplexity.Find(a => a.ID == item.IdComplexity).Name</td>
+                            <td class="col-2">@Dict.ListType.Find(a => a.ID == item.IdType).Name</td>
+                            <td class="col-2">@item.Description</td>
+                            <td class="col-1">
+                                @if (Dict.dApp.Role == "адмін") { 
+                                    <div class="input-group">
+                                        @if(DateTime.Now < item.StartTime) { 
+                                        <a href="@Url.Action("CompetitionAdmin","Main",new {id=item.CompetitionId,str="" })">
+                                            <i class="fas fa-pencil-alt fa-fw"style="color:forestgreen"></i>
+                                        </a>
+                                        }
+                                        @if (item.IsDeleted == 0) { 
+                                        <a href="@Url.Action("DeleteComp","Main",new {id=item.CompetitionId })">
+                                            <i class="fas fa-trash-alt fa-fw"style="color:red"></i>
+                                        </a>
+                                        }
+                                         @if (item.IsDeleted == 1) { 
+                                        <a href="@Url.Action("RestoreComp","Main",new {id=item.CompetitionId })">
+                                            <i class="fas fa-upload" style="color:green"></i>
+                                        </a>
+                                         }
+                                    </div>
+                                }
+                            </td>
+                        </tr>
+                    }
+
+
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </form>
+</body>

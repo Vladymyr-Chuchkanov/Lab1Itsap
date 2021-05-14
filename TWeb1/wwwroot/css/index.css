@@ -1,0 +1,10 @@
+﻿
+.photo_bg {
+    border: solid;
+    border-width: 1px;
+    background-color: white;
+    height: auto;
+    width: auto;
+    max-width: 170px;
+    max-height: 170px;
+}

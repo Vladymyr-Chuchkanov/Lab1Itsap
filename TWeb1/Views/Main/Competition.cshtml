@@ -1,0 +1,353 @@
+﻿@model TWeb1.Items
+@{
+    int a = 1;
+    int b = 1;
+    int c = 1;
+}
+<script>
+
+    $(document).ready(function () {
+
+        $("#navbarGuest").hide();
+        var role = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Dict.dApp.Role) as String);
+        if (role != "адмін") {
+            $("#TCAdmin").hide();
+        }
+
+    })
+    function ToExcel() {
+        $.ajax({
+            type: 'POST',
+            url: '/Additional/Excel',
+            data: $('Excel').serialize(),
+            dataType: 'html',
+            cache: false
+        }).done(function(data) {
+
+            var jdata = JSON.parse(data);
+            if (jdata.status == "OK") {
+
+                var url = '@Url.Action("GetFile", "Reports", new {name = -500})';
+                url = url.replace("-500", jdata.data);
+                //alert(url);
+                window.location.href = url;
+            }
+
+        }).fail(function (response) {
+
+            //$("#body").removeClass("loading");
+
+        });
+
+    }
+    function RedactAdmit(id) {
+        var el = document.getElementById(id);
+        var res = el.value;
+        var url = "/Main/CompTeamAdmition?id=" + id + "&admit=" + res;;
+        $.ajax({
+            type: "POST",
+            url: url
+
+        }).done(function () {
+
+            window.location.href = url;
+
+        });
+    }
+    function FormExel() {
+
+        
+        $.ajax({
+            type: 'POST',
+            url: '/Additional/Excel?idC='+$("#CurrentCompId").value,
+            
+            
+        }).done(function(data) {
+
+            var jdata = JSON.parse(data);
+            if (jdata.status == "OK") {
+
+                var url = '@Url.Action("GetFile", "Additional", new {name = -500})';
+                url = url.replace("-500", jdata.data);
+                //alert(url);
+                window.location.href = url;
+            }
+
+        }).fail(function (response) {
+
+            //$("#body").removeClass("loading");
+
+        });
+    }
+
+</script>
+<form id="Excel" action="/Additional/ToExcel" method="post">
+    @Html.HiddenFor(m => m.Reses)
+    @Html.HiddenFor(m => m.TeamsLst)
+    @Html.HiddenFor(m => m.CurrentCompId)
+    @Html.HiddenFor(m => m.CurrentTeamId)
+    @Html.HiddenFor(m => m.obstacle)
+    @Html.HiddenFor(m => m.obstacleCompetition)
+    @Html.HiddenFor(m => m.partisipant)
+
+
+</form>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12" style="text-align:left;font-weight:bold;font-size:20px;">@Model.CurrentCompName</div>
+        <div class="col-12 input-group">
+            @*<button class="btn btn-sm btn-outline-success border-0" type="button" onclick="ToExcel()"><i class="far fa-file-excel"></i></button>*@
+            @if (Dict.dApp.Role == "адмін")
+            {
+                <button class="btn btn-sm btn-outline-success border-0" type="button" onclick="ImportExcel()"><i class="fas fa-upload"></i></button>
+                <button class="btn btn-sm btn-outline-success border-0" type="button" onclick="FormExcel()"><i class="far fa-file-excel"></i></button>
+            }
+            @if ((Dict.dApp.Role == "адмін" || Dict.dApp.Role == "тренер")&&(DateTime.Now < Model.CurrentCompTime)  )
+            {
+                <a href="@Url.Action("CreateTeam","Main",new {id=Model.CurrentCompId })">Створити завку</a>
+            }
+        </div>
+    </div>
+
+    <div class="row">
+
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="Obstacles" data-toggle="tab" href="#obstacles" role="tab" aria-controls="obstacles" aria-selected="false" style="color:green">Опис Дистанції</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link " id="SoloResult" data-toggle="tab" href="#soloResult" role="tab" aria-controls="soloResult" aria-selected="true" style="color:green">Результати учасникiв</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="TeamResult" data-toggle="tab" href="#teamResult" role="tab" aria-controls="teamResult" aria-selected="false" style="color:green">Результати команд</a>
+            </li>
+            <li class="nav-item" id="TCAdmin">
+                <a class="nav-link" id="TeamComp" data-toggle="tab" href="#teamComp" role="tab" aria-controls="teamComp" aria-selected="false" style="color:green">Заявки</a>
+            </li>
+
+        </ul>
+
+        <div class="row tab-content" id="myTabContent" style="height:100%;">
+            <div class="tab-pane fade show active" style="height:100%;width:100%;" id="obstacles" role="tabpanel" aria-labelledby="Obstacles">
+                <table class="table table-borderless table-sm  table-striped table-hover  table-responsive" style="min-width:720px;">
+                    <tr style="background-color: green;color: WHITE;font-weight: bold;">
+                        <td>Номер</td>
+                        <td>@Html.LabelFor(m => m.obstacle[0].Name)</td>
+                        <td>@Html.LabelFor(m => m.obstacle[0].Length)</td>
+                        <td>@Html.LabelFor(m => m.obstacle[0].Height)</td>
+                        <td>@Html.LabelFor(m => m.obstacle[0].MovementFirst)</td>
+                        <td>@Html.LabelFor(m => m.obstacle[0].EquipmentStart)</td>
+                        <td>@Html.LabelFor(m => m.obstacle[0].EquipmentObstacle)</td>
+                        <td>@Html.LabelFor(m => m.obstacle[0].EquipmentTarget)</td>
+                        <td>@Html.LabelFor(m => m.obstacle[0].OptTime)</td>
+                        <td>@Html.LabelFor(m => m.obstacle[0].CriticalTime)</td>
+                        <td>@Html.LabelFor(m => m.obstacle[0].AdditionalDescription)</td>
+                        <td>@Html.LabelFor(m => m.obstacle[0].ConditionsOvercoming)</td>
+
+                    </tr>
+
+                    @foreach (var it in Model.obstacle)
+                    {
+                        <tr>
+                            <td>@a</td>
+                            <td>@it.Name</td>
+                            <td>@it.Length</td>
+                            <td>@it.Height</td>
+                            <td>@it.MovementFirst</td>
+                            <td>@it.EquipmentStart</td>
+                            <td>@it.EquipmentObstacle</td>
+                            <td>@it.EquipmentTarget</td>
+                            <td>@it.OptTime</td>
+                            <td>@it.CriticalTime</td>
+                            <td>@it.AdditionalDescription</td>
+                            <td>@it.ConditionsOvercoming</td>
+                        </tr>
+
+
+                        <tr hidden><td>    @(a++)</td></tr>
+
+
+                    }
+
+
+
+                </table>
+            </div>
+            <div class="tab-pane fade " id="soloResult" role="tabpanel" aria-labelledby="SoloResult">
+
+                <table class="table table-borderless table-sm  table-striped table-hover  table-responsive" style="min-width:720px;">
+                    <tr style="background-color: green;color: WHITE;font-weight: bold;">
+                        <td>Учасник</td>
+                        @foreach (var it in Model.obstacle)
+                        {
+                            <td>@it.Name</td>
+                        }
+                        <td>Сума штрафiв</td>
+                        <td>Сума часу</td>
+                        <td>Загальний результат</td>
+                        <td>Мiсце</td>
+
+
+                    </tr>
+                    @if (Model.ResultsSolo.Count == 0)
+                    {
+                        <tr><td class="col-12">Результатiв ще нема!</td></tr>
+                    }
+                    @foreach (var it in Model.ResultsSolo)
+                    {
+                        <tr>
+                            <td><a href="@Url.Action("PersonPage","Main",new {idP = it.partisipantId })">@it.Name</a></td>
+                            @foreach (var itt in it.results)
+                            {
+                                <td>@itt.Time / @itt.Penalty</td>
+                            }
+                            @if (it.results.Count < Model.obstacle.Count)
+                            {
+                                @for (int i = 0; i < Model.obstacle.Count - it.results.Count; i++)
+                                {
+                                    <td></td>
+                                }
+                            }
+                            <td>@it.penalty</td>
+                            <td>@it.clearTime</td>
+                            <td>@it.resTime</td>
+                            <td>@it.position</td>
+
+
+                        </tr>
+
+                    }
+
+
+
+
+                </table>
+
+
+
+            </div>
+            <div class="tab-pane fade " id="teamResult" role="tabpanel" aria-labelledby="TeamResult">
+
+                <table class="table table-borderless table-sm  table-striped table-hover  table-responsive" style="min-width:720px;">
+                    <tr style="background-color: green;color: WHITE;font-weight: bold;">
+                        <td>Команда</td>
+                        <td>Учасник</td>
+                        @foreach (var it in Model.obstacle)
+                        {
+                            <td>@it.Name</td>
+                        }
+                        <td>Сума штрафiв</td>
+                        <td>Сума часу</td>
+                        <td>Загальний результат</td>
+                        <td>Мiсце</td>
+
+
+                    </tr>
+                    @if (Model.TeamsLst.Count == 0)
+                    {
+                        <tr><td class="col-12">Результатiв ще нема!</td></tr>
+                    }
+                    @foreach (var team in Model.TeamsLst)
+                    {
+                        <tr>
+                            <td>@team.TeamName</td>
+                            <td></td>
+                            @foreach (var tttt in Model.obstacle)
+                            {
+                                <td></td>
+                            }
+                            <td>@team.penalty</td>
+                            <td>@team.clearTime</td>
+                            <td>@team.resTime</td>
+                            <td>@team.team.Position</td>
+                        </tr>
+
+                        @foreach (var it in team.resItems)
+                        {
+                            <tr>
+                                <td></td>
+                                <td><a href="@Url.Action("PersonPage","Main",new {idP = it.partisipantId })">@it.Name</a></td>
+                                @foreach (var itt in it.results)
+                                {
+                                    <td>@itt.Time / @itt.Penalty</td>
+                                }
+                                @if (it.results.Count < Model.obstacle.Count)
+                                {
+                                    @for (int i = 0; i < Model.obstacle.Count - it.results.Count; i++)
+                                    {
+                                        <td></td>
+                                    }
+                                }
+                                <td>@it.penalty</td>
+                                <td>@it.clearTime</td>
+                                <td>@it.resTime</td>
+                                <td>@team.team.Position</td>
+
+
+                            </tr>
+                        }
+
+                    }
+
+
+
+                </table>
+
+
+            </div>
+            <div class="tab-pane fade " id="teamComp" role="tabpanel" aria-labelledby="TeamComp">
+
+                <table class="table table-borderless table-sm  table-striped table-hover  table-responsive" style="min-width:720px;">
+
+                    <tr style="background-color: green;color: WHITE;font-weight: bold;">
+
+                        <td>Назва команди</td>
+                        <td>Статус заявки</td>
+                        <td>###</td>
+
+                    </tr>
+                    @foreach (var it in Model.competitionTeam)
+                    {
+                        <tr>
+                            <td><a href="@Url.Action("ShowTeamComp","Main",new {idCT=it.CompetitionTeamId })">@(Model.TN.FirstOrDefault(a=>a.ID==it.TeamId).Name)</a></td>
+                            <td>
+                                <select id="@it.CompetitionTeamId" onchange="RedactAdmit('@it.CompetitionTeamId')">
+                                    @foreach (var l in Dict.ListAdmitions)
+                                    {
+
+
+                                        @if (l.ID == it.AdmittedId)
+                                        {
+                                            <option value="@l.ID" selected>@l.Name</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@l.ID">@l.Name</option>
+                                        }
+                                    }
+                                </select>
+                            </td>
+                            <td>
+                                @if (Dict.dApp.Role == "адмін" || (Dict.dApp.Role == "тренер" && Model.teamPartisipant.Where(a => a.TeamId == it.TeamId).Select(a => a.PartisipantId).ToList().Contains(Dict.dApp.idP)))
+                                {
+                                    <a href="@Url.Action("CreateTeam", "Main", new { id = it.CompetitionId, idCT = it.CompetitionTeamId })">
+                                    <i class="fas fa-pencil-alt fa-fw" style="color:forestgreen"></i>
+                                </a>
+                                }
+                            </td>
+                        </tr>
+                    }
+
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+
+
+
+</div>
+
+@* <td>@Html.DropDownListFor(m=>m.competitionTeam.FirstOrDefault(a=>a.CompetitionTeamId==it.CompetitionTeamId),new SelectList (Dict.ListAdmitions,"ID","Name",Model.competitionTeam.FirstOrDefault(a => a.CompetitionTeamId == it.CompetitionTeamId).AdmittedId ),new {@onchange=RedactAdmit() })</td>*@

@@ -1,0 +1,225 @@
+﻿@model TWeb1.Items
+<script>
+    $(document).ready(function () {
+        $("#ShowEdit").hide();
+        $("#InsHide").hide();
+        var accId = '@Dict.dApp.AccId';
+        var checkId = '@Model.partisipant.IdAccount';
+        //var role =  Html.Raw(Json.Encode(String.IsNullOrWhiteSpace(Dict.dApp.Role)));
+        var role = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Dict.dApp.Role) as String);
+        if (role == "гість") {
+            $("#navbarAcc").hide();
+
+        } else {
+            $("#navbarGuest").hide();
+        }
+        if (role !="адмін") {
+            $("#AdminF").hide();
+            $("#AdmonRole").hide();
+        }
+        if (role == "адмін" || role == "тренер" || accId == checkId) {
+            $("#InsHide").show();
+        }
+    })
+    function ShowEdit() {
+        var role = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Dict.dApp.Role) as String);
+        var accId = '@Dict.dApp.AccId';
+        var checkId = '@Model.partisipant.IdAccount';
+        if (role == "адмін" || accId == checkId) {
+            $("#ShowEdit").show();
+        }
+
+    }
+    function ShowDoc(id) {
+
+        $.ajax({
+            url: "/Additional/ShowDoc?id=" + id,
+            success: function (data) {
+
+                window.open("/Additional/ShowDoc?id=" + id, "_blank");
+            }
+
+        }).fail(function () {
+
+            alert("Спочатку завантажте файл!");
+        });
+    }
+
+    function uploadFile(inputId, type,idI,idP) {
+
+        var input = document.getElementById(inputId);
+        var files = input.files;
+        var formData = new FormData();
+
+        for (var i = 0; i != files.length; i++) {
+            formData.append("files", files[i]);
+
+        }
+
+        $.ajax(
+            {
+                url: "/Additional/UploadFiles?idP=" + idP+"&idI="+ idI+ "&type=" + type,
+                data: formData,
+                processData: false,
+                contentType: false,
+                type: "POST"
+            }
+        );
+
+    }
+    function AchievChange() {
+        $("#rankPartisipant_DateOfAchievement").val(document.getElementById("Achiev0").value);
+    }
+</script>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <button type="button" class="btn btn-sm btn-success" onclick="ShowEdit()"><i class="fas fa-pencil-alt fa-fw"></i></button>
+        </div>
+        <div class="col-12 pt-2 pb-2" id="ShowEdit">
+            <form action="/Main/PersonPage" method="post">
+                @Html.HiddenFor(m => m.partisipant.ParticipantId)
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-12">
+                            <button class="btn-success btn btn-sm" type="submit">Зберегти</button>
+                        </div>
+                        <div class="col-3">
+                            @Html.LabelFor(m => m.partisipant.Name)
+                        </div>
+                        <div class=" col-9">
+                            @Html.TextBoxFor(m => m.partisipant.Name, new { @class = "form-control form-control-sm" })
+                        </div>
+                        <div class="col-3">
+                            @Html.LabelFor(m => m.partisipant.DateOfBirth)
+                        </div>
+                        <div class=" col-9">
+                            @Html.HiddenFor(m => m.partisipant.DateOfBirth)
+                            <input type="text" id="Birth0" onchange="BirthChange()" class="datePick form-control  form-control-sm text-center " value="@(Model.partisipant.DateOfBirth.ToString().Split(" ")[0])">
+
+                        </div>
+                        <div class="col-3">
+                            @Html.LabelFor(m => m.partisipant.Phone_number)
+                        </div>
+                        <div class=" col-9">
+                            @Html.TextBoxFor(m => m.partisipant.Phone_number, new { @class = "form-control form-control-sm", @placeholder = "+999999999" })
+                        </div>
+                        <div class="col-3">
+                            @Html.LabelFor(m => m.partisipant.IdSex)
+                        </div>
+                        <div class=" col-9">
+                            @Html.DropDownListFor(m => m.partisipant.IdSex, new SelectList(Dict.ListSexes, "ID", "Name", Model.partisipant.IdSex), new { @class = "form-control form-control-sm" })
+                        </div>
+                        <div class="col-3">
+                            Розряд
+                        </div>
+                        <div class=" col-9">
+                            @Html.DropDownListFor(m => m.rankPartisipant.RankId, new SelectList(Dict.ListRanks, "ID", "Name", Model.rankPartisipant.RankId), new { @class = "form-control form-control-sm" })
+                        </div>
+                        <div class="col-3">
+                            Дата отримання
+                        </div>
+                        <div class=" col-9">
+                            @Html.HiddenFor(m => m.rankPartisipant.DateOfAchievement)
+                            <input type="text" id="Achiev0" onchange="AchievChange()" class="datePick form-control  form-control-sm text-center " value="@(Model.rankPartisipant.DateOfAchievement.ToString().Split(" ")[0])">
+
+                        </div>
+
+                        <div class="col-3">
+                            Роль 
+                        </div>
+                        <div class="col-9" id="AdmonRole">                            
+                            @Html.DropDownListFor(m => m.account.RoleName,new SelectList(Dict.ListRoles,"Name","Name",Model.account.RoleName))
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+    </div>
+    <div class="row">
+        <div class=" col-12">
+            @Html.DisplayFor(m => m.partisipant.Name)
+        </div>
+        <div class=" col-12">
+            @Model.partisipant.DateOfBirth.ToString().Split(" ")[0].Replace("/", ".")
+        </div>
+        <div class=" col-12">
+            <a href='tel: @Model.partisipant.Phone_number' id="Item_PhoneMob1_2" rel="noopener noreferrer">@Model.partisipant.Phone_number</a>
+        </div>
+        <div class=" col-12">
+            Стать: @Dict.ListSexes.FirstOrDefault(a => a.ID == Model.partisipant.IdSex).Name
+        </div>
+        <div class="col-12">
+            Розряд: @Dict.ListRanks.FirstOrDefault(a=>a.ID==Model.rankPartisipant.RankId).Name
+        </div>
+        <div class="col-12" id="InsHide">
+            <div class="container pl-0 ml-0">
+                <div class="col-6 TextDataSize border-dark" onclick="ShowDoc('@Model.partisipant.IdFile','@Model.partisipant.ParticipantId')" style=" border: solid; border-width: 1px; cursor: pointer;max-width:160px; ">
+                    Страховий полiс
+                </div>
+
+                <form id="formImage" name="form" enctype="multipart/form-data" method="post">
+                    <input type="file" id="fileInsurance" name="fileInsurance" class="btn btn-success btn-sm col pl-0 " onchange="uploadFile('fileInsurance','Insurance','@Model.partisipant.IdFile','@Model.partisipant.ParticipantId');" style="color:transparent;background-color:transparent;border-color:transparent;max-width:117px;min-width:117px;">
+                </form>
+            </div>
+        </div>
+
+    </div>
+    <div class="row">
+        <ul class="nav nav-tabs container-fluid" id="myTab" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="Competitions" data-toggle="tab" href="#competitions" role="tab" aria-controls="competitions" aria-selected="false" style="color:green">Змагання</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link " id="Teams" data-toggle="tab" href="#teams" role="tab" aria-controls="teams" aria-selected="true" style="color:green">Заявки</a>
+            </li>
+            
+
+        </ul>
+        <div class="row tab-content" id="myTabContent" style="height:100%;">
+            <div class="tab-pane fade show active" style="height:100%;width:100%;" id="competitions" role="tabpanel" aria-labelledby="Competitions">
+                <table class="table table-borderless table-sm  table-striped table-hover  table-responsive" style="min-width:720px;">
+                    <tr style="background-color: green;color: WHITE;font-weight: bold;">
+                        <td>Назва</td>
+                        <td>Дата проведення</td>
+                        <td>Клас</td>
+                        <td>Тип</td>
+
+                    </tr>
+                    @foreach (var it in Model.competition)
+                    {
+                        <tr>
+                            <td><a href=@Url.Action("Competition", "Main", new {id=it.CompetitionId })>@it.Name</a></td>
+                            <td>@it.StartTime</td>
+                            <td>@Dict.ListComplexity.FirstOrDefault(a => a.ID == it.IdComplexity).Name</td>
+                            <td>@Dict.ListType.FirstOrDefault(a => a.ID == it.IdType).Name</td>
+                        </tr>
+                    }
+
+                </table>
+            </div>
+            <div class="tab-pane fade show " style="height:100%;width:100%;" id="teams" role="tabpanel" aria-labelledby="Teams">
+                <table class="table table-borderless table-sm  table-striped table-hover  table-responsive" style="min-width:720px;">
+                    <tr style="background-color: green;color: WHITE;font-weight: bold;">
+                        <td>Назва</td>
+                        <td>Статус заявки</td>
+                        <td>Змагання</td>
+                        
+
+                    </tr>
+                    @foreach (var it in Model.PTeams)
+                    {
+                        <tr>
+                            <td><a href="@Url.Action("ShowTeamComp","Main",new {idCT=it.idCT })">@it.team.Name</a></td>
+                            <td>@Dict.ListAdmitions.FirstOrDefault(a=>a.ID==it.AdmitId).Name</td>
+                            <td><a href=@Url.Action("Competition", "Main", new {id=it.comp.CompetitionId })>@it.comp.Name</a></td>
+                        </tr>
+                    }
+
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

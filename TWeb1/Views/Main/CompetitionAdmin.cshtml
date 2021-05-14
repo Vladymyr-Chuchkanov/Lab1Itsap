@@ -1,0 +1,179 @@
+﻿@model TWeb1.Competition_Admin
+<script>
+
+    $(document).ready(function () {
+
+        $("#navbarGuest").hide();
+        $("#Copmetition_new_StartTime").attr("class", "form-control form-control-sm");
+    })
+    
+</script>
+<script src="https://code.jquery.com/jquery-migrate-3.0.0.js"></script>
+<script>
+    function StartTimeChange() {
+        $("#Copmetition_new_StartTime").val(document.getElementById("StartTime0").value);
+    }
+    $(function () {
+
+        $('.datePick').datepicker({
+            format: "mm/dd/yyyy",
+            todayBtn: "linked",
+            clearBtn: true,
+            orientation: "bottom auto",
+            todayHighlight: true
+        });
+
+
+    });
+    function DeleteObstacle(id) {
+        //var el = document.getElementById(id).hide();
+        //el.hide();
+        $("#" + id).hide();
+        var str = document.getElementById("ToDelete").value;
+        var str1 = str + "/" + id;
+        alert(str1);
+        $("#ToDelete").val(str1);
+    }
+
+    function EditObs(id) {
+        $("#ret").val(1);
+        $("#idO").val(id);
+        $("#CompetitionAdminForm").submit();
+    }
+    function AddObs() {
+        $("#ret").val(2);
+
+        $("#CompetitionAdminForm").submit();
+    }
+    function ShowObstacle(id) {
+
+        var link = '@Url.Action("ShowObstacle","Main",new {id = -101 })';
+        link = link.replace("-101", id);
+        
+        $("#dialog").load(link);
+        $("#dialog").dialog({
+            buttons: [{ text: "Close", click: dialogClose, "class": "btn btn-danger" }],
+            autoOpen: false,
+            modal: true,
+            width: '100%',
+            height: '100%',
+            position: { my: "left top", at: "left top", of: window },
+            
+            resizable: true
+
+        });
+        $(".ui-dialog-titlebar-close").hide();
+        $('#dialog').dialog("open");
+        $(".ui-dialog-titlebar-close").hide();
+    }
+    function dialogClose() {
+
+        $('#dialog').dialog("close");
+    }
+
+
+</script>
+<form id="CompetitionAdminForm" action="/Main/CompetitionAdmin" method="post">
+    <div class="container-fluid" id="Div000"style="min-width:420px;">
+        <div id="dialog"></div>
+        <div class="row">
+            <div class="col-12">
+                @*<a href="@Url.Action("AddObstacle","Main",new {id = Model.Copmetition_new.CompetitionId,str = Model.IdObstacles })">Додати Етап</a>*@
+                <button class="btn-sm btn btn-success" type="button" onclick="AddObs()">Додати Етап</button>
+                <button class="btn-success btn btn-sm" type="submit">Зберегти</button>
+                <a href="/Main/Main">Назад без збереження</a>
+            </div>
+        </div>
+        @Html.HiddenFor(m=>m.Copmetition_new.CompetitionId)
+        @Html.HiddenFor(m=>m.Copmetition_new.IsDeleted)
+        @Html.HiddenFor(m=>m.ret)
+        @Html.HiddenFor(m=>m.idO)
+        @Html.HiddenFor(m=>m.IdObstacles)
+        @Html.HiddenFor(m=>m.ToDelete)
+        <div class=" row">
+            <div class="col-3">
+                @Html.LabelFor(m => m.Copmetition_new.Name)
+            </div>
+            <div class="col-9">
+                @Html.TextBoxFor(m => m.Copmetition_new.Name,new  {@class="form-control form-control-sm" })
+            </div>
+            <div class="col-3">
+                @Html.LabelFor(m => m.Copmetition_new.Place)
+            </div>
+            <div class="col-9">
+                @Html.TextBoxFor(m => m.Copmetition_new.Place, new { @class = "form-control form-control-sm" })
+            </div>
+            <div class="col-3">
+                @Html.LabelFor(m => m.Copmetition_new.StartTax)
+            </div>
+            <div class="col-9">
+                @Html.TextBoxFor(m => m.Copmetition_new.StartTax, new { @type = "number", @class = "form-control form-control-sm" })
+            </div>
+            <div class="col-3">
+                @Html.LabelFor(m => m.Copmetition_new.StartTime)
+            </div>
+            <div class="col-9">
+                @Html.EditorFor(m => m.Copmetition_new.StartTime, new {@class= "form-control  form-control-sm" })
+                @*   @Html.TextBoxFor(m=>m.Copmetition_new.StartTime, new { @class = " form-control  form-control-sm ", @type = "datetime-local",@Value= Model.Copmetition_new.StartTime })
+                 @Html.HiddenFor(m => m.Copmetition_new.StartTime)
+        <input type="text" id="StartTime0" onchange="StartTimeChange()" class="datePick form-control  form-control-sm text-center " value="@(Model.Copmetition_new.StartTime.ToString().Split(" ")[0])">
+                *@
+            </div>
+            <div class="col-3">
+                @Html.LabelFor(m => m.Copmetition_new.Description)
+            </div>
+            <div class="col-9">
+                @Html.TextBoxFor(m => m.Copmetition_new.Description, new { @class = "form-control form-control-sm" })
+            </div>
+            <div class="col-3">
+                @Html.LabelFor(m => m.Copmetition_new.IdType)
+            </div>
+            <div class="col-9">
+                @Html.DropDownListFor(m => m.Copmetition_new.IdType,new SelectList(Dict.ListType, "ID", "Name",Model.Copmetition_new.IdType), new { @class = "form-control form-control-sm" })
+            </div>
+            <div class="col-3">
+                @Html.LabelFor(m => m.Copmetition_new.Description)
+            </div>
+            <div class="col-9">
+                @Html.DropDownListFor(m => m.Copmetition_new.IdComplexity, new SelectList(Dict.ListComplexity, "ID", "Name", Model.Copmetition_new.IdComplexity), new { @class = "form-control form-control-sm" })
+            </div>
+            <div class="col-12">
+                <p>Етапи:</p>
+                <table class="table table-borderless table-sm  table-striped table-hover">
+                    <tr class="row" style="background-color: green;color: WHITE;font-weight: bold;">
+                        <td class="col-3">Назва</td>
+                        <td class="col-1">Довжина</td>
+                        <td class="col-5">Опис</td>
+                        <td class="col-3">###</td>                        
+                    </tr>
+                    @foreach(var it in Model.ObstaclesItem)
+                    {
+                        <tr class="row" id="@it.obstacle.ObstacleId">
+                            <td class="col-3" onclick="ShowObstacle('@it.obstacle.ObstacleId')">@it.obstacle.Name</td>
+                            <td class="col-1" onclick="ShowObstacle('@it.obstacle.ObstacleId')">@it.obstacle.Length</td>
+                            <td class="col-5" onclick="ShowObstacle('@it.obstacle.ObstacleId')">@it.obstacle.AdditionalDescription</td>
+                            <td class="col-3">
+                                <div class="input-group">
+                                    @*<a href="@Url.Action("EditObstacle","Main",new {idC = Model.Copmetition_new.CompetitionId,idO=it.ObstacleId,str = Model.IdObstacles,back =1 })">
+            <i class="fas fa-pencil-alt fa-fw"></i>
+        </a>*@
+                                    <button class="btn-sm btn btn-success" type="button" onclick="EditObs(@it.obstacle.ObstacleId)"><i class="fas fa-pencil-alt fa-fw"></i></button>
+                                    <a href="@Url.Action("RemoveObstacle","Main",new {id= it.OCId })"><i class="fas fa-trash-alt fa-fw"></i></a>
+                                    
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </table>
+            </div>
+
+
+        </div>
+
+        
+
+
+
+    </div>
+
+</form>

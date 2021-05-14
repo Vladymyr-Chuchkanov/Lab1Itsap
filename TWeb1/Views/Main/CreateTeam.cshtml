@@ -1,0 +1,88 @@
+﻿@model TWeb1.CreateTeam
+
+<script>
+    $(document).ready(function () {
+            $("#navbarGuest").hide();
+    })
+    function RemovePartisipant(id) {
+        $("#idP").val(id);
+        $("#back").val(1);
+        $("#CreateTeam0").submit();
+    }
+    function ListPartisipant() {
+        $("#back").val(2);
+        $("#CreateTeam0").submit();
+    }
+</script>
+<form action="/Main/CreateTeam" method="post" id="CreateTeam0">
+    @Html.HiddenFor(m=>m.team.TeamId)
+    @Html.HiddenFor(m=>m.competition.CompetitionId)
+    @Html.HiddenFor(m=>m.back)
+    @Html.HiddenFor(m=>m.idP)
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-8">
+                <button class="btn btn-success btn-sm" type="submit">Зберегти</button>
+                @*<a href="@Url.Action("ListPartisipants","Main",new {idT=Model.team.TeamId,idC=Model.competition.CompetitionId })">Додати учасника</a>*@
+                <button class="btn btn-sm btn-success" type="button" onclick="ListPartisipant()">Додати учасника</button>
+            </div>
+            <div class="col-4">
+                <a href="@Url.Action("Competition","Main",new {id= Model.competition.CompetitionId })">Повернутися</a>
+            </div>
+
+            <div class="col-9">
+                Змагання: @Model.competition.Name
+            </div>
+        </div>
+        <div class="row">
+            <div class=" col-3">
+                @Html.LabelFor(m => m.team.Name)
+            </div>
+            <div class="col-9">
+                @Html.TextBoxFor(m => m.team.Name, new { @class = "form-control form-control-sm" })
+            </div>
+            <div class=" col-3">
+                @Html.LabelFor(m => m.team.Comment)
+            </div>
+            <div class="col-9">
+                @Html.TextBoxFor(m => m.team.Comment, new { @class = "form-control form-control-sm" })
+            </div>
+        </div>
+
+        <div class="row">
+            <table class="table table-borderless table-sm  table-striped table-hover  table-responsive" style="min-width:720px;">
+                <tr style="background-color: green;color: WHITE;font-weight: bold;">
+                    <td>ПIБ</td>
+                    <td>Дата народження</td>
+                    <td>Стать</td>
+                    <td>###</td>
+
+                </tr>
+                @foreach (var part in Model.partisipants)
+                {
+                    <tr>
+                        <td><a href="@Url.Action("PersonPage","Main",new {idP=part.ParticipantId })">@part.Name</a></td>
+                        <td>@part.DateOfBirth.ToString().Split(" ")[0]</td>
+                        <td>@Dict.ListSexes.FirstOrDefault(a => a.ID == part.IdSex).Name</td>
+                        <td>
+
+                            @*
+                            <a href="@Url.Action("DeletePartisipant","Main",new {id=part.ParticipantId,idC=Model.competition.CompetitionId,idT=Model.team.TeamId})">
+                                <i class="fas fa-trash-alt fa-fw" style="color:red"></i>
+                            </a>
+                            *@
+                            <button class="btn btn-sm btn-danger" type="button" onclick="RemovePartisipant('@part.ParticipantId')"><i class="fas fa-trash-alt fa-fw"></i></button>
+
+                        </td>
+                    </tr>
+
+                }
+            </table>
+        </div>
+
+
+    </div>
+
+
+
+</form>

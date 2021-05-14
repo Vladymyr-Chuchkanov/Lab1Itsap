@@ -1,0 +1,103 @@
+﻿@model TWeb1.EditObstacle
+    <script>
+
+    $(document).ready(function () {
+
+        $("#navbarGuest").hide();
+        //$("#navbarAcc").hide();
+    })
+        function WithoutSave() {
+            $("#Save").val(0);
+            $("#EditObsForm").submit();
+
+        }
+    </script>
+<form id="EditObsForm" method="post" action="/Main/EditObstacle">
+    <div class="container-fluid">
+        @Html.HiddenFor(m => m.Back)
+        @Html.HiddenFor(m => m.id)
+        @Html.HiddenFor(m => m.str)
+        @Html.HiddenFor(m => m.Save)
+        @Html.HiddenFor(m => m.Obstacle.ObstacleId)
+        @Html.HiddenFor(m => m.Obstacle.IsDeleted)
+
+        <div class="row">
+            <div class="col-3">
+                @Html.LabelFor(m => m.Obstacle.Name)
+            </div>
+            <div class="col-9">
+                @Html.TextBoxFor(m => m.Obstacle.Name, new { @class = "form-control form-control-sm",@required="" })
+            </div>
+            <div class="col-3">
+                @Html.LabelFor(m => m.Obstacle.AdditionalDescription)
+            </div>
+            <div class="col-9">
+                @Html.TextBoxFor(m => m.Obstacle.AdditionalDescription, new { @class = "form-control form-control-sm" })
+            </div>
+            <div class="col-3">
+                @Html.LabelFor(m => m.Obstacle.Length)
+            </div>
+            <div class="col-9">
+                @Html.TextBoxFor(m => m.Obstacle.Length, new { @type = "number", @class = "form-control form-control-sm" })
+            </div>
+            <div class="col-3">
+                @Html.LabelFor(m => m.Obstacle.Height)
+            </div>
+            <div class="col-9">
+                @Html.TextBoxFor(m => m.Obstacle.Height, new { @type = "number", @class = "form-control form-control-sm" })
+            </div>
+            <div class="col-3">
+                @Html.LabelFor(m => m.Obstacle.ConditionsOvercoming)
+            </div>
+            <div class="col-9">
+                @Html.TextBoxFor(m => m.Obstacle.ConditionsOvercoming, new { @class = "form-control form-control-sm" })
+            </div>
+            <div class="col-3">
+                @Html.LabelFor(m => m.Obstacle.MovementFirst)
+            </div>
+            <div class="col-9">
+                @Html.TextBoxFor(m => m.Obstacle.MovementFirst, new { @class = "form-control form-control-sm" })
+            </div>
+            <div class="col-3">
+                @Html.LabelFor(m => m.Obstacle.EquipmentStart)
+            </div>
+            <div class="col-9">
+                @Html.TextBoxFor(m => m.Obstacle.EquipmentStart, new { @class = "form-control form-control-sm" })
+            </div>
+            <div class="col-3">
+                @Html.LabelFor(m => m.Obstacle.EquipmentObstacle)
+            </div>
+            <div class="col-9">
+                @Html.TextBoxFor(m => m.Obstacle.EquipmentObstacle, new { @class = "form-control form-control-sm" })
+            </div>
+            <div class="col-3">
+                @Html.LabelFor(m => m.Obstacle.EquipmentTarget)
+            </div>
+            <div class="col-9">
+                @Html.TextBoxFor(m => m.Obstacle.EquipmentTarget, new { @class = "form-control form-control-sm" })
+            </div>
+            <div class="col-3">
+                @Html.LabelFor(m => m.Obstacle.OptTime)
+            </div>
+            <div class="col-9">
+                @Html.TextBoxFor(m => m.Obstacle.OptTime, new { @class = "form-control form-control-sm",@type="text",@placeholder="00:00:00", @pattern = "[0-9][0-9]:[0-9][0-9]:[0-9][0-9]" })
+            </div>
+            <div class="col-3">
+                @Html.LabelFor(m => m.Obstacle.CriticalTime)
+            </div>
+            <div class="col-9">
+                @Html.TextBoxFor(m => m.Obstacle.CriticalTime, new { @class = "form-control form-control-sm", @type = "text", @placeholder = "00:00:00", @pattern = "[0-9][0-9]:[0-9][0-9]:[0-9][0-9]" })
+            </div>
+
+        </div>
+        <div class="row">
+            <button type="submit" class="col-3 btn btn-sm btn-success">Зберегти</button>
+            <button type="button" class="col-3 btn btn-sm btn-danger" onclick="WithoutSave()">Назад</button>
+        </div>
+
+
+    </div>
+
+
+
+</form>

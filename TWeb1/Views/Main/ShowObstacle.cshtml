@@ -1,0 +1,75 @@
+﻿@model TWeb1.Obstacle
+
+<div class="container" style="background-color:grey">
+    <div class="row">
+        <div class="col-3">
+            @Html.LabelFor(m => m.Name)
+        </div>
+        <div class="col-9">
+            @Model.Name
+        </div>
+        <div class="col-3">
+            @Html.LabelFor(m => m.AdditionalDescription)
+        </div>
+        <div class="col-9">
+            @Model.AdditionalDescription
+        </div>
+        <div class="col-3">
+            @Html.LabelFor(m => m.Length)
+        </div>
+        <div class="col-9">
+            @Model.Length
+        </div>
+        <div class="col-3">
+            @Html.LabelFor(m => m.Height)
+        </div>
+        <div class="col-9">
+            @Model.Height
+        </div>
+        <div class="col-3">
+            @Html.LabelFor(m => m.ConditionsOvercoming)
+        </div>
+        <div class="col-9">
+            @Model.ConditionsOvercoming
+        </div>
+        <div class="col-3">
+            @Html.LabelFor(m => m.MovementFirst)
+        </div>
+        <div class="col-9">
+            @Model.MovementFirst
+        </div>
+        <div class="col-3">
+            @Html.LabelFor(m => m.EquipmentStart)
+        </div>
+        <div class="col-9">
+            @Model.EquipmentStart
+        </div>
+        <div class="col-3">
+            @Html.LabelFor(m => m.EquipmentObstacle)
+        </div>
+        <div class="col-9">
+            @Model.EquipmentObstacle
+        </div>
+        <div class="col-3">
+            @Html.LabelFor(m => m.EquipmentTarget)
+        </div>
+        <div class="col-9">
+            @Model.EquipmentTarget
+        </div>
+        <div class="col-3">
+            @Html.LabelFor(m => m.OptTime)
+        </div>
+        <div class="col-9">
+            @Model.OptTime
+        </div>
+        <div class="col-3">
+            @Html.LabelFor(m => m.CriticalTime)
+        </div>
+        <div class="col-9">
+            @Model.CriticalTime
+        </div>
+
+    </div>
+
+
+</div>

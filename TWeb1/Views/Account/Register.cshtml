@@ -1,0 +1,49 @@
+﻿@model TWeb1.Items
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var err = @Model.ErrorLogIn;
+
+        if (err == "1") {
+            $("#error").text("паролi не спiвпадають!");
+        }
+        else if (err == "2") {
+            $("#error").text("логін зайнятий!");
+        }
+        $("#navbarAcc").hide();
+        $("#navbarGuest").hide();
+    });
+    function Back() {
+        $.ajax({
+            url: "/Account/Index",
+            success: window.open("/Account/Index", "_self")
+        });
+
+    }
+
+</script>
+    <form action="/Account/Register" method="post">
+        <div class="container-fluid" style="margin-top:10%;">
+            <div class="row mt-1">
+                <div class="col-12 offset-md-3 ">
+                    <span id="error" style="color:red"></span>
+                </div>
+            </div>
+            <div class="row">
+                @Html.LabelFor(m => m.account.Email, "Логiн:", new { @class = "col-3 col-md-2 offset-md-3 col-form-label" })
+                @Html.TextBoxFor(m => m.account.Email, new { @class = "col-8 col-md-4 form-control form-control-sm", @required = "true" })
+
+                @Html.LabelFor(m => m.account.Password, "Пароль:", new { @class = " col-3 col-md-2 offset-md-3  col-form-label" })
+                @Html.TextBoxFor(m => m.account.Password, new { @class = "col-8 col-md-4 form-control form-control-sm", @type = "password", @required = "true" })
+
+                @Html.LabelFor(m => m.CheckPassword, "Пiдтвердити пароль:", new { @class = " col-3 col-md-2 offset-md-3  col-form-label" })
+                @Html.TextBoxFor(m => m.CheckPassword, new { @class = "col-8 col-md-4 form-control form-control-sm", @type = "password", @required = "true" })
+            </div>
+
+            <div class="row">
+                <button type="submit" id="submitBtt" class="btn-success col-10 " style="max-width:190px;margin-left: calc(50% - 95px);">Зареєструватися</button>
+                <button type="button"onclick="Back()" id="backBtt" class="btn-success col-10 " style="max-width:190px;margin-left: calc(50% - 95px);">Назад</button>
+            </div>
+        </div>
+    </form>

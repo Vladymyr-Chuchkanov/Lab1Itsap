@@ -1,0 +1,84 @@
+﻿@model TWeb1.Items
+<script>
+    $(document).ready(function () {
+        var role = '@Dict.dApp.Role';
+        if (role == "гість") {
+            $("#navbarAcc").hide();
+            //$("#InsHide").hide();
+        } else {
+            $("#navbarGuest").hide();
+        }
+        if (role !="адмін") {
+            //$("#AdminF").hide();
+        }
+    })
+
+    $(function () {
+
+        $('.datePick').datepicker({
+            format: "mm/dd/yyyy",
+            todayBtn: "linked",
+            clearBtn: true,
+            orientation: "bottom auto",
+            todayHighlight: true
+        });
+
+
+    });
+    function BirthChange() {
+        $("#partisipant_DateOfBirth").val(document.getElementById("Birth0").value);
+    }
+    
+    function AchievChange() {
+        $("#rankPartisipant_DateOfAchievement").val(document.getElementById("Achiev0").value);
+    }
+</script>
+<form action="/Main/PersonPageNew" method="post">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <button class="btn-success btn btn-sm" type="submit">Зберегти</button>
+            </div>
+            <div class="col-3">
+                @Html.LabelFor(m => m.partisipant.Name)
+            </div>
+            <div class=" col-9">
+                @Html.TextBoxFor(m => m.partisipant.Name, new { @class = "form-control form-control-sm" })
+            </div>
+            <div class="col-3">
+                @Html.LabelFor(m => m.partisipant.DateOfBirth)
+            </div>
+            <div class=" col-9">
+                @Html.HiddenFor(m => m.partisipant.DateOfBirth)
+                <input type="text" id="Birth0" onchange="BirthChange()" class="datePick form-control  form-control-sm text-center " value="@(Model.partisipant.DateOfBirth.ToString().Split(" ")[0])">
+
+            </div>
+            <div class="col-3">
+                @Html.LabelFor(m => m.partisipant.Phone_number)
+            </div>
+            <div class=" col-9">
+                @Html.TextBoxFor(m => m.partisipant.Phone_number, new { @class = "form-control form-control-sm" })
+            </div>
+            <div class="col-3">
+                @Html.LabelFor(m => m.partisipant.IdSex)
+            </div>
+            <div class=" col-9">
+                @Html.DropDownListFor(m => m.partisipant.IdSex, new SelectList(Dict.ListSexes, "ID", "Name", Model.partisipant.IdSex), new { @class = "form-control form-control-sm" })
+            </div>
+            <div class="col-3">
+                Розряд
+            </div>
+            <div class=" col-9">
+                @Html.DropDownListFor(m => m.rankPartisipant.RankId, new SelectList(Dict.ListRanks, "ID", "Name", Model.rankPartisipant.RankId), new { @class = "form-control form-control-sm" })
+            </div>
+            <div class="col-3">
+                Дата отримання
+            </div>
+            <div class=" col-9">
+                @Html.HiddenFor(m => m.rankPartisipant.DateOfAchievement)
+                <input type="text" id="Achiev0" onchange="AchievChange()" class="datePick form-control  form-control-sm text-center " value="@(Model.rankPartisipant.DateOfAchievement.ToString().Split(" ")[0])">
+
+            </div>
+        </div>
+    </div>
+</form>
