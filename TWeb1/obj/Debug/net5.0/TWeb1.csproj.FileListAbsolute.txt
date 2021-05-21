@@ -192,3 +192,10 @@ D:\Itsap\TWeb1\bin\Debug\net5.0\Microsoft.Web.Infrastructure.dll
 D:\Itsap\TWeb1\obj\Debug\net5.0\Razor\Views\Main\CreateTeam.cshtml.g.cs
 D:\Itsap\TWeb1\obj\Debug\net5.0\Razor\Views\Main\ListPartisipants.cshtml.g.cs
 D:\Itsap\TWeb1\obj\Debug\net5.0\Razor\Views\Main\ShowTeamComp.cshtml.g.cs
+D:\Itsap\TWeb1\bin\Debug\net5.0\Grpc.Core.dll
+D:\Itsap\TWeb1\bin\Debug\net5.0\Grpc.Core.Api.dll
+D:\Itsap\TWeb1\bin\Debug\net5.0\runtimes\linux-arm64\native\libgrpc_csharp_ext.arm64.so
+D:\Itsap\TWeb1\bin\Debug\net5.0\runtimes\linux-x64\native\libgrpc_csharp_ext.x64.so
+D:\Itsap\TWeb1\bin\Debug\net5.0\runtimes\osx-x64\native\libgrpc_csharp_ext.x64.dylib
+D:\Itsap\TWeb1\bin\Debug\net5.0\runtimes\win-x64\native\grpc_csharp_ext.x64.dll
+D:\Itsap\TWeb1\bin\Debug\net5.0\runtimes\win-x86\native\grpc_csharp_ext.x86.dll

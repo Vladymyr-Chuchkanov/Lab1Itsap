@@ -1,12 +1,14 @@
 {
   "version": 2,
-  "dgSpecHash": "F/ZoADYzAgwwBWilFE9+CW8Y5Jdv9g2aIMpII715nvuGbFLR0VbyixVnZ09uuDGyBM+EPaYqGsOe3LJiB34V0g==",
+  "dgSpecHash": "pEtjOticKCFfelZEAdIUFycvb1/EXDZAjKqaDndEdV2Ur3NQZMujySInOxNRanyFiureD5oabJiMghiR3GKDmg==",
   "success": true,
   "projectFilePath": "D:\\Itsap\\TWeb1\\TWeb1.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\vovax\\.nuget\\packages\\closedxml\\0.95.4\\closedxml.0.95.4.nupkg.sha512",
     "C:\\Users\\vovax\\.nuget\\packages\\documentformat.openxml\\2.7.2\\documentformat.openxml.2.7.2.nupkg.sha512",
     "C:\\Users\\vovax\\.nuget\\packages\\excelnumberformat\\1.0.10\\excelnumberformat.1.0.10.nupkg.sha512",
+    "C:\\Users\\vovax\\.nuget\\packages\\grpc.core\\2.37.1\\grpc.core.2.37.1.nupkg.sha512",
+    "C:\\Users\\vovax\\.nuget\\packages\\grpc.core.api\\2.37.1\\grpc.core.api.2.37.1.nupkg.sha512",
     "C:\\Users\\vovax\\.nuget\\packages\\humanizer.core\\2.8.26\\humanizer.core.2.8.26.nupkg.sha512",
     "C:\\Users\\vovax\\.nuget\\packages\\jquery\\3.6.0\\jquery.3.6.0.nupkg.sha512",
     "C:\\Users\\vovax\\.nuget\\packages\\microsoft.aspnet.mvc\\5.2.7\\microsoft.aspnet.mvc.5.2.7.nupkg.sha512",

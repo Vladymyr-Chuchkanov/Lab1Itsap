@@ -44,6 +44,10 @@
               "target": "Package",
               "version": "[0.95.4, )"
             },
+            "Grpc.Core": {
+              "target": "Package",
+              "version": "[2.37.1, )"
+            },
             "Microsoft.AspNet.Mvc": {
               "target": "Package",
               "version": "[5.2.7, )"

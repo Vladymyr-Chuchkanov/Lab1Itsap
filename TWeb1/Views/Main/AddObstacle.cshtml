@@ -3,7 +3,10 @@
 <script>
 
     $(document).ready(function () {
-
+        var test = '@Model.obs';
+        if (test == 1) {
+            $(".xxxxx").hide();
+        }
         $("#navbarGuest").hide();
         //$("#navbarAcc").hide();
     })
@@ -44,7 +47,7 @@
                 <a href="@Url.Action("CreateObstacle","Main",new {idC = Model.id,str=Model.str})">Створити Етап</a>
             </div>
             <div class="col-6">
-                <a href="@Url.Action("CompetitionAdmin","Main",new {id = Model.id,str=Model.str})">Повернутися до змагання</a>
+                <a class="xxxxx"href="@Url.Action("CompetitionAdmin","Main",new {id = Model.id,str=Model.str})">Повернутися до змагання</a>
             </div>
         </div>
         <div class="row">
@@ -79,7 +82,8 @@
                         <td class="col-1" onclick="ShowObstacle('@it.ObstacleId')">@it.CriticalTime</td>
                         <td class="col-1">
                             <div class="input-group">
-                                <a href="@Url.Action("AddObs","Main",new {str=Model.str,idC = Model.id,idO=it.ObstacleId,calc = Model.calc++ })">
+
+                                <a class="xxxxx" href="@Url.Action("AddObs","Main",new {str=Model.str,idC = Model.id,idO=it.ObstacleId,calc = Model.calc++ })">
                                     <i class="fas fa-plus fa-fw" style="color:green"></i>
                                 </a>
                                 <a href="@Url.Action("EditObstacle","Main",new {str=Model.str,idC = Model.id,idO=it.ObstacleId,back=2 })">

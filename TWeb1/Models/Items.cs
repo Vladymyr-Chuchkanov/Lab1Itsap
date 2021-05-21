@@ -27,6 +27,8 @@ namespace TWeb1
         public string Search { get; set; }
         public int calc { get; set; }
 
+        public int obs { get; set; }
+
     }
     public class EditObstacle
     {
@@ -128,6 +130,7 @@ namespace TWeb1
         public List<ResultItem> ResultsSolo { get; set; }
 
         public int CurrentCompId { get; set; }
+        public int? CurrentCompFileId { get; set; }
         public List<DictItem> TN { get; set; }
 
         public int NotAdd { get; set; }
@@ -155,5 +158,13 @@ namespace TWeb1
         public int back { get; set; }
         public int idP { get; set; }
         public int save { get; set; }
+    }
+
+    public class GridItem
+    {
+        public int Idval { get; set; }
+        public int row { get; set; }
+        public int col { get; set; }
+
     }
 }

@@ -40,7 +40,7 @@ namespace TWeb1.Controllers
             ||a.Place.Contains(Search)
             ||a.Description.Contains(Search)                
             )).Where(a=>comps.Contains(a.IdComplexity.ToString())).Where(a => typs.Contains(a.IdType.ToString())).ToList();
-            
+            data.competition = data.competition.OrderByDescending(a => a.StartTime).ToList();
             
 
             
@@ -96,6 +96,8 @@ namespace TWeb1.Controllers
             {                
                 return RedirectToAction("PersonPageNew", "Main");
             }
+            data.partisipant.Name = data.partisipant.Name.Trim();
+            data.partisipant.Phone_number = data.partisipant.Phone_number==null?"": data.partisipant.Phone_number.Trim();
             data.account = _context.Accounts.FirstOrDefault(a => a.AccountId == data.partisipant.IdAccount);
             data.Age = DateTime.Now.Year-data.partisipant.DateOfBirth.Year;
             if (data.partisipant.DateOfBirth.Month<DateTime.Now.Month
@@ -208,6 +210,7 @@ namespace TWeb1.Controllers
 
             var data = new Items();
             data.CurrentCompId = id;
+            data.CurrentCompFileId = compet.IdFile;
             data.CurrentCompTime = compet.StartTime;
             var requests = from T in _context.Teams
                            join CT in _context.CompetitionTeams on T.TeamId equals CT.TeamId
@@ -220,6 +223,11 @@ namespace TWeb1.Controllers
                              where OC.CompetitionId == id
                              where OC.IsDeleted!=1
                              select O).ToList();
+
+            List<int> lstOC = (from OC in _context.ObstacleCompetitions
+                               where OC.CompetitionId==id
+                               select OC.ObstacleCompetitionId
+                               ).ToList();
             if(DateTime.Now >= compet.StartTime)
             {
                 foreach(var it in data.competitionTeam)
@@ -235,6 +243,7 @@ namespace TWeb1.Controllers
                     _context.SaveChanges();
                 }
             }
+            var temptest = Dict.dApp.Role;
             if (Dict.ListType.FirstOrDefault(a => a.ID == compet.IdType).Name.Contains("собист"))
             {
                 data.Solo = true;
@@ -270,7 +279,8 @@ namespace TWeb1.Controllers
                     var reI = new ResultItem();
                     reI.partisipantId = part.ParticipantId;
                     reI.Name = part.Name;
-                    reI.results = _context.Results.Where(a => a.PartisipantId == part.ParticipantId).ToList();
+
+                    reI.results = _context.Results.Where(a => a.PartisipantId == part.ParticipantId&&lstOC.Contains(a.ObstacleCompetitionId)).ToList();
                     TL.resItems.Add(reI);
                 }
 
@@ -334,6 +344,11 @@ namespace TWeb1.Controllers
                 temp1.Name = _context.Teams.FirstOrDefault(a => a.TeamId == it.TeamId).Name;
                 data.TN.Add(temp1);
             } 
+
+
+
+
+
             return View(data);
 
         }
@@ -395,7 +410,9 @@ namespace TWeb1.Controllers
             else
             {
                 data.Copmetition_new = _context.Competitions.FirstOrDefault(a => a.CompetitionId == id);
-                
+                data.Copmetition_new.Name = data.Copmetition_new.Name.Trim();
+                data.Copmetition_new.Place = data.Copmetition_new.Place.Trim();
+                data.Copmetition_new.Description = data.Copmetition_new.Description.Trim();
                 data.ObstaclesItem = (from CO in _context.ObstacleCompetitions
                                       join O in _context.Obstacles on CO.ObstacleId equals O.ObstacleId
                                       where CO.CompetitionId == id
@@ -451,20 +468,33 @@ namespace TWeb1.Controllers
             }
             return RedirectToAction("Main", "Main");
         }
-        public IActionResult AddObstacle(int id, string str,string Search="")
+
+        public IActionResult ListObstacles()
+        {
+            return RedirectToAction("AddObstacle", "Main", new { id = 0, str = "", obs = 22 });
+        }
+        public IActionResult AddObstacle(int id, string str,int obs=-1, string Search="")
         {
             var data = new ObstaclesList();
             data.str = str;
             data.id = id;
             data.Search = Search;
             data.calc = 1;
-            if (Search == "")
+            if (obs != -1)
             {
-                data.Obstacles = _context.Obstacles.Where(a=>a.IsDeleted!=1).ToList();
+                data.obs = 1;
             }
             else
             {
-                data.Obstacles = _context.Obstacles.Where(a => a.IsDeleted != 1).Where(a => a.Name.Contains(Search)||a.AdditionalDescription.Contains(Search)).OrderBy(a=>a.Name).ToList();
+                data.obs = 0;
+            }
+            if (Search == "")
+            {
+                data.Obstacles = _context.Obstacles.Where(a=>a.IsDeleted!=1).OrderByDescending(a=>a.ObstacleId).ToList();
+            }
+            else
+            {
+                data.Obstacles = _context.Obstacles.Where(a => a.IsDeleted != 1).Where(a => a.Name.Contains(Search)||a.AdditionalDescription.Contains(Search)).OrderBy(a => a.ObstacleId).OrderByDescending(a=>a.Name).ToList();
             }
             return View(data);
         }
@@ -507,12 +537,33 @@ namespace TWeb1.Controllers
                 data.Obstacle = new Obstacle();
                 data.Obstacle.Name = "";
                 data.Obstacle.IsDeleted = 1;
+                data.Obstacle.AdditionalDescription = "";
+                data.Obstacle.ConditionsOvercoming = "";
+                data.Obstacle.CriticalTime = "00:00:00";
+                data.Obstacle.OptTime = "00:00:00";
+                data.Obstacle.Height = 0;
+                data.Obstacle.Length = 0;
+                data.Obstacle.EquipmentObstacle = "";
+                data.Obstacle.EquipmentStart = "";
+                data.Obstacle.EquipmentTarget = "";
+                data.Obstacle.MovementFirst = "";
+
                 _context.Obstacles.Add(data.Obstacle);
                 _context.SaveChanges();
             }
             else
             {
+
                 data.Obstacle = _context.Obstacles.FirstOrDefault(a => a.ObstacleId == idO);
+                data.Obstacle.OptTime = data.Obstacle.OptTime.Trim();
+                data.Obstacle.CriticalTime = data.Obstacle.CriticalTime.Trim();
+                data.Obstacle.Name = data.Obstacle.Name.Trim();
+                data.Obstacle.AdditionalDescription = data.Obstacle.AdditionalDescription==null?"": data.Obstacle.AdditionalDescription.Trim();
+                data.Obstacle.EquipmentTarget = data.Obstacle.EquipmentTarget == null ? "": data.Obstacle.EquipmentTarget.Trim();
+                data.Obstacle.EquipmentStart = data.Obstacle.EquipmentStart==null?"": data.Obstacle.EquipmentStart.Trim();
+                data.Obstacle.EquipmentObstacle = data.Obstacle.EquipmentObstacle==null?"": data.Obstacle.EquipmentObstacle.Trim();
+                data.Obstacle.MovementFirst = data.Obstacle.MovementFirst==null?"": data.Obstacle.MovementFirst.Trim();
+                data.Obstacle.ConditionsOvercoming = data.Obstacle.ConditionsOvercoming==null?"": data.Obstacle.ConditionsOvercoming.Trim();
             }
             return View(data);
         }
@@ -520,8 +571,38 @@ namespace TWeb1.Controllers
         [HttpPost]
         public IActionResult EditObstacle(EditObstacle data)
         {
-            if (data.Save == 1) { 
+            data.Obstacle.AdditionalDescription = data.Obstacle.AdditionalDescription == null ? "" : data.Obstacle.AdditionalDescription.Trim();
+            data.Obstacle.EquipmentTarget = data.Obstacle.EquipmentTarget == null ? "" : data.Obstacle.EquipmentTarget.Trim();
+            data.Obstacle.EquipmentStart = data.Obstacle.EquipmentStart == null ? "" : data.Obstacle.EquipmentStart.Trim();
+            data.Obstacle.EquipmentObstacle = data.Obstacle.EquipmentObstacle == null ? "" : data.Obstacle.EquipmentObstacle.Trim();
+            data.Obstacle.MovementFirst = data.Obstacle.MovementFirst == null ? "" : data.Obstacle.MovementFirst.Trim();
+            data.Obstacle.ConditionsOvercoming = data.Obstacle.ConditionsOvercoming == null ? "" : data.Obstacle.ConditionsOvercoming.Trim();
+            data.Obstacle.OptTime = data.Obstacle.OptTime==null?"": data.Obstacle.OptTime.Trim();
+            data.Obstacle.CriticalTime = data.Obstacle.CriticalTime==null?"": data.Obstacle.CriticalTime.Trim();
+
+            var xxx = _context.ObstacleCompetitions.FirstOrDefault(a => a.ObstacleId == data.Obstacle.ObstacleId);
+            if (data.Save == 1) {
+                int change = 0;
                 var temp = _context.Obstacles.FirstOrDefault(a => a.ObstacleId == data.Obstacle.ObstacleId);
+                
+                if (!(temp.Name.Trim().Equals(data.Obstacle.Name) &&
+                    temp.AdditionalDescription.Trim().Equals(data.Obstacle.AdditionalDescription) &&
+                    temp.ConditionsOvercoming.Trim().Equals(data.Obstacle.ConditionsOvercoming) &&
+                    temp.Length == data.Obstacle.Length &&
+                    temp.Height == data.Obstacle.Height &&
+                    temp.CriticalTime.Trim().Equals(data.Obstacle.CriticalTime) &&
+                    temp.OptTime.Trim().Equals(data.Obstacle.OptTime) &&
+                    temp.EquipmentObstacle.Trim().Equals(data.Obstacle.EquipmentObstacle) &&
+                    temp.EquipmentStart.Trim().Equals(data.Obstacle.EquipmentStart) &&
+                    temp.EquipmentTarget.Trim().Equals(data.Obstacle.EquipmentTarget) &&
+                    temp.MovementFirst.Trim().Equals(data.Obstacle.MovementFirst)))
+                { change = 1; }
+                if (xxx != null&&change!=0) {
+                    temp = new Obstacle();
+                    _context.Obstacles.Add(temp);
+                }
+                
+                
                 temp.Name = data.Obstacle.Name;
                 temp.AdditionalDescription = data.Obstacle.AdditionalDescription;
                 temp.ConditionsOvercoming = data.Obstacle.ConditionsOvercoming;
@@ -535,9 +616,14 @@ namespace TWeb1.Controllers
                 temp.MovementFirst = data.Obstacle.MovementFirst;
                 temp.IsDeleted = 0;
                 _context.SaveChanges();
-                
-                
-                if (data.Back == 1)
+                if (xxx != null&&change!=0)
+                {
+                    var t = _context.ObstacleCompetitions.FirstOrDefault(a => a.ObstacleId == data.Obstacle.ObstacleId && a.CompetitionId == data.id);
+                    t.ObstacleId = temp.ObstacleId;
+                    _context.SaveChanges();
+                }
+
+                    if (data.Back == 1)
                 {
                     return RedirectToAction("CompetitionAdmin", "Main", new { str = data.str, id = data.id });
                 }
@@ -568,6 +654,12 @@ namespace TWeb1.Controllers
         public IActionResult DeleteComp(int id)
         {
             var temp = _context.Competitions.FirstOrDefault(a => a.CompetitionId == id);
+            if (temp.IsDeleted == 1)
+            {
+                _context.Competitions.Remove(temp);
+                _context.SaveChanges();
+                return RedirectToAction("Main", "Main");
+            }
             temp.IsDeleted = 1;
             _context.SaveChanges();
             return RedirectToAction("Main", "Main");
@@ -629,7 +721,7 @@ namespace TWeb1.Controllers
             var temp2 = _context.Teams.FirstOrDefault(a => a.TeamId == items.team.TeamId);
             temp2.IsDeleted = 0;
             temp2.Name = items.team.Name;
-            temp2.Comment = items.team.Comment;
+            temp2.Comment = items.team.Comment==null?"":items.team.Comment;
             _context.SaveChanges();
             if (items.back == 0)
             {
@@ -646,7 +738,23 @@ namespace TWeb1.Controllers
             return RedirectToAction("Competition", "Main", new { id = items.competition.CompetitionId }); ;
 
         }
-        
+        public IActionResult DeleteTeam(int idC,int idCT)
+        {
+            var temp = _context.CompetitionTeams.FirstOrDefault(a => a.CompetitionTeamId == idCT);
+            temp.IsDeleted = 1;
+            _context.SaveChanges();
+            return RedirectToAction("Competition", "Main", new { id = idC });
+
+        }
+        public IActionResult RestoreTeam(int idC, int idCT)
+        {
+            var temp = _context.CompetitionTeams.FirstOrDefault(a => a.CompetitionTeamId == idCT);
+            temp.IsDeleted = 0;
+            _context.SaveChanges();
+            return RedirectToAction("Competition", "Main", new { id = idC });
+
+        }
+
         public IActionResult ListPartisipants(int idC=-1,int idT=-1)
         {
             

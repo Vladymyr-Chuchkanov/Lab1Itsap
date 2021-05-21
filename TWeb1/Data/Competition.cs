@@ -35,6 +35,7 @@ namespace TWeb1
         
         
         public virtual Type IdTypeNavigation { get; set; }
+        public int? IdFile { get; set; }
         public virtual ICollection<CompetitionTeam> CompetitionTeams { get; set; }
         public virtual ICollection<ObstacleCompetition> ObstacleCompetitions { get; set; }
 

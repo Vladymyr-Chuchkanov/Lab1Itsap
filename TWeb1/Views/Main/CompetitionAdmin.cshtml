@@ -113,7 +113,7 @@
                 @Html.LabelFor(m => m.Copmetition_new.StartTime)
             </div>
             <div class="col-9">
-                @Html.EditorFor(m => m.Copmetition_new.StartTime, new {@class= "form-control  form-control-sm" })
+                @Html.EditorFor(m => m.Copmetition_new.StartTime, new {@class= "form-control  form-control-sm",@format="dd.MM.yyyy HH:mm" })
                 @*   @Html.TextBoxFor(m=>m.Copmetition_new.StartTime, new { @class = " form-control  form-control-sm ", @type = "datetime-local",@Value= Model.Copmetition_new.StartTime })
                  @Html.HiddenFor(m => m.Copmetition_new.StartTime)
         <input type="text" id="StartTime0" onchange="StartTimeChange()" class="datePick form-control  form-control-sm text-center " value="@(Model.Copmetition_new.StartTime.ToString().Split(" ")[0])">

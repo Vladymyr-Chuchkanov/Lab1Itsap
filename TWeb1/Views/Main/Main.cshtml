@@ -16,7 +16,7 @@
 <script>
 
     $(document).ready(function () {
-        var role = '@Dict.dApp.Role';
+        var role = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Dict.dApp.Role) as String);
         if (role == "гість") {
             $("#navbarAcc").hide();
         } else {
@@ -155,11 +155,11 @@
                                             <i class="fas fa-pencil-alt fa-fw"style="color:forestgreen"></i>
                                         </a>
                                         }
-                                        @if (item.IsDeleted == 0) { 
+                                        
                                         <a href="@Url.Action("DeleteComp","Main",new {id=item.CompetitionId })">
                                             <i class="fas fa-trash-alt fa-fw"style="color:red"></i>
                                         </a>
-                                        }
+                                        
                                          @if (item.IsDeleted == 1) { 
                                         <a href="@Url.Action("RestoreComp","Main",new {id=item.CompetitionId })">
                                             <i class="fas fa-upload" style="color:green"></i>

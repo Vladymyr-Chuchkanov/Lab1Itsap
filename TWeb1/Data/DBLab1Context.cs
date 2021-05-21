@@ -102,6 +102,7 @@ namespace TWeb1
                     .IsFixedLength(true);
 
                 entity.Property(e => e.IdComplexity).HasColumnName("id_Complexity");
+                entity.Property(e => e.IdFile).HasColumnName("IdFile");
 
                 entity.Property(e => e.IdType).HasColumnName("id_Type");
                 entity.Property(e => e.IsDeleted).HasColumnName("isDeleted");

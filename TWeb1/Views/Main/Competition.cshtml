@@ -10,7 +10,7 @@
 
         $("#navbarGuest").hide();
         var role = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Dict.dApp.Role) as String);
-        if (role != "адмін") {
+        if (role != "адмін"&&role!="тренер") {
             $("#TCAdmin").hide();
         }
 
@@ -54,24 +54,19 @@
 
         });
     }
-    function FormExel() {
+    function FormExcel(id) {
 
-        
+        var link = '/Additional/ExcelPrepare?idC=' + id;
         $.ajax({
             type: 'POST',
-            url: '/Additional/Excel?idC='+$("#CurrentCompId").value,
-            
-            
+            url: link
+
+
         }).done(function(data) {
+            var url = '@Url.Action("GetFile", "Additional", new {name = -500})';
+            url = url.replace("-500", data.name);
+            window.location.href = url;
 
-            var jdata = JSON.parse(data);
-            if (jdata.status == "OK") {
-
-                var url = '@Url.Action("GetFile", "Additional", new {name = -500})';
-                url = url.replace("-500", jdata.data);
-                //alert(url);
-                window.location.href = url;
-            }
 
         }).fail(function (response) {
 
@@ -79,7 +74,40 @@
 
         });
     }
+    function UploadResult(id) {
+        
+        var link = '/Additional/UploadResult?idC=' + id;
+        $.ajax({
+            type: 'POST',
+            url: link
 
+
+        });
+
+        
+    }
+    function uploadFile(inputId, id) {
+
+        var input = document.getElementById(inputId);
+        var files = input.files;
+        var formData = new FormData();
+
+        for (var i = 0; i != files.length; i++) {
+            formData.append("files", files[i]);
+
+        }
+
+        $.ajax(
+            {
+                url: "/Additional/UploadResult?idC=" + id,
+                data: formData,
+                processData: false,
+                contentType: false,
+                type: "POST"
+            }
+        );
+
+    }
 </script>
 <form id="Excel" action="/Additional/ToExcel" method="post">
     @Html.HiddenFor(m => m.Reses)
@@ -89,6 +117,7 @@
     @Html.HiddenFor(m => m.obstacle)
     @Html.HiddenFor(m => m.obstacleCompetition)
     @Html.HiddenFor(m => m.partisipant)
+    @Html.HiddenFor(m=>m.CurrentCompFileId)
 
 
 </form>
@@ -100,13 +129,21 @@
             @*<button class="btn btn-sm btn-outline-success border-0" type="button" onclick="ToExcel()"><i class="far fa-file-excel"></i></button>*@
             @if (Dict.dApp.Role == "адмін")
             {
-                <button class="btn btn-sm btn-outline-success border-0" type="button" onclick="ImportExcel()"><i class="fas fa-upload"></i></button>
-                <button class="btn btn-sm btn-outline-success border-0" type="button" onclick="FormExcel()"><i class="far fa-file-excel"></i></button>
+                <div class="container">
+                    <form id="formResult" name="form" enctype="multipart/form-data" method="post">
+                      Завантажити результат  <input type="file" id="fileResult" name="fileResult" class="btn btn-success btn-sm col pl-0 " onchange="uploadFile('fileResult', '@Model.CurrentCompId');" style="color:transparent;background-color:transparent;border-color:transparent;max-width:117px;min-width:117px;">
+                    </form>
+                </div>
+                <button class="btn btn-sm btn-outline-success border-0 mr-2 ml-2" type="button" onclick="FormExcel(@Model.CurrentCompId)"><i class="far fa-file-excel"></i></button>
             }
-            @if ((Dict.dApp.Role == "адмін" || Dict.dApp.Role == "тренер")&&(DateTime.Now < Model.CurrentCompTime)  )
+            @if (Model.CurrentCompFileId != null) { 
+                <button class="btn btn-sm btn-outline-success border-0" type="button" onclick="GetResult(@Model.CurrentCompId)">Завантажити результати</button>
+            }
+            @if ((Dict.dApp.Role == "адмін" || Dict.dApp.Role == "тренер") && (DateTime.Now < Model.CurrentCompTime))
             {
                 <a href="@Url.Action("CreateTeam","Main",new {id=Model.CurrentCompId })">Створити завку</a>
             }
+
         </div>
     </div>
 
@@ -309,6 +346,7 @@
                     </tr>
                     @foreach (var it in Model.competitionTeam)
                     {
+                        @if(it.IsDeleted!=1|| Dict.dApp.Role == "адмін") { 
                         <tr>
                             <td><a href="@Url.Action("ShowTeamComp","Main",new {idCT=it.CompetitionTeamId })">@(Model.TN.FirstOrDefault(a=>a.ID==it.TeamId).Name)</a></td>
                             <td>
@@ -329,14 +367,27 @@
                                 </select>
                             </td>
                             <td>
-                                @if (Dict.dApp.Role == "адмін" || (Dict.dApp.Role == "тренер" && Model.teamPartisipant.Where(a => a.TeamId == it.TeamId).Select(a => a.PartisipantId).ToList().Contains(Dict.dApp.idP)))
+                                @if (Dict.dApp.Role == "адмін" || (Dict.dApp.Role == "тренер" ))
                                 {
                                     <a href="@Url.Action("CreateTeam", "Main", new { id = it.CompetitionId, idCT = it.CompetitionTeamId })">
-                                    <i class="fas fa-pencil-alt fa-fw" style="color:forestgreen"></i>
-                                </a>
+                                        <i class="fas fa-pencil-alt fa-fw" style="color:forestgreen"></i>
+                                    </a>
+                                    @if (it.IsDeleted == 0 && Dict.dApp.Role == "адмін")
+                                    {
+                                        <a href="@Url.Action("DeleteTeam","Main",new {idC=it.CompetitionId, idCT = it.CompetitionTeamId})">
+                                            <i class="fas fa-trash-alt fa-fw" style="color:red"></i>
+                                        </a>
+                                    }
+                                    @if (it.IsDeleted == 1&& Dict.dApp.Role == "адмін")
+                                    {
+                                        <a href="@Url.Action("RestoreTeam","Main",new {idC=it.CompetitionId, idCT = it.CompetitionTeamId })">
+                                            <i class="fas fa-upload" style="color:green"></i>
+                                        </a>
+                                    }
                                 }
                             </td>
                         </tr>
+                        }
                     }
 
                 </table>
